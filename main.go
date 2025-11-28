@@ -51,6 +51,62 @@ func getUser(chatID int64) *User {
 	return users[chatID]
 }
 
+// Главное меню
+func getMainKeyboard() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("💧 Вода"),
+			tgbotapi.NewKeyboardButton("🏋️ Тренировка"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("🍎 Питание"),
+			tgbotapi.NewKeyboardButton("📊 Статистика"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("🧹 Очистить"),
+		),
+	)
+}
+
+// Меню тренировок
+func getTrainingKeyboard() tgbotapi.InlineKeyboardMarkup {
+	return tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("🏃 Кардио 15", "cardio_15"),
+			tgbotapi.NewInlineKeyboardButtonData("💪 Силовая 15", "strength_15"),
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("🏃 Кардио 30", "cardio_30"),
+			tgbotapi.NewInlineKeyboardButtonData("💪 Силовая 30", "strength_30"),
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("🏃 Кардио 45", "cardio_45"),
+			tgbotapi.NewInlineKeyboardButtonData("💪 Силовая 45", "strength_45"),
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("🏃 Кардио 60", "cardio_60"),
+			tgbotapi.NewInlineKeyboardButtonData("💪 Силовая 60", "strength_60"),
+		),
+	)
+}
+
+// Меню питания
+func getFoodKeyboard() tgbotapi.InlineKeyboardMarkup {
+	return tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("🔥 Калории", "calories"),
+			tgbotapi.NewInlineKeyboardButtonData("🥩 Белки", "protein"),
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("🥑 Жиры", "fat"),
+			tgbotapi.NewInlineKeyboardButtonData("🍚 Углеводы", "carbs"),
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("📊 Все БЖУ", "all_nutrients"),
+		),
+	)
+}
+
 func main() {
 	loadUserData()
 
@@ -67,6 +123,7 @@ func main() {
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
+		// Обработка нажатий на инлайн-кнопки
 		if update.CallbackQuery != nil {
 			callback := update.CallbackQuery
 			user := getUser(callback.Message.Chat.ID)
@@ -84,13 +141,77 @@ func main() {
 			case "strength_15":
 				user.StrengthTime += 15
 				user.TrainingTime += 15
-				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "💪 Добавлено 15 минут силовой! Ты мощь пуся! 🔥")
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "💪 Добавлено 15 минут силовой! Так держать пус! 🔥")
 				bot.Send(msg)
 				saveUserData()
+			case "cardio_30":
+				user.CardioTime += 30
+				user.TrainingTime += 30
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "🏃 Добавлено 30 минут кардио! Супер пуся! 🌟")
+				bot.Send(msg)
+				saveUserData()
+			case "strength_30":
+				user.StrengthTime += 30
+				user.TrainingTime += 30
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "💪 Добавлено 30 минут силовой! Невероятно пус! 💥")
+				bot.Send(msg)
+				saveUserData()
+			case "cardio_45":
+				user.CardioTime += 45
+				user.TrainingTime += 45
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "🏃 Добавлено 45 минут кардио! Фантастика пуся! 🚀")
+				bot.Send(msg)
+				saveUserData()
+			case "strength_45":
+				user.StrengthTime += 45
+				user.TrainingTime += 45
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "💪 Добавлено 45 минут силовой! Ты монстр пус! 🤯")
+				bot.Send(msg)
+				saveUserData()
+			case "cardio_60":
+				user.CardioTime += 60
+				user.TrainingTime += 60
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "🏃 ЦЕЛЫЙ ЧАС КАРДИО!!! Ты ИДЕАЛ пуся! 👑")
+				bot.Send(msg)
+				saveUserData()
+			case "strength_60":
+				user.StrengthTime += 60
+				user.TrainingTime += 60
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "💪 ЦЕЛЫЙ ЧАС СИЛОВОЙ!!! Ты легенда пус! 🏆")
+				bot.Send(msg)
+				saveUserData()
+			case "calories":
+				user.LastCommand = "addcalories"
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "🔥 Введи количество калорий заюсь:\nПример: *250*")
+				msg.ParseMode = "Markdown"
+				bot.Send(msg)
+			case "protein":
+				user.LastCommand = "addprotein"
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "🥩 Введи количество белка зай (в граммах):\nПример: *25*")
+				msg.ParseMode = "Markdown"
+				bot.Send(msg)
+			case "fat":
+				user.LastCommand = "addfat"
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "🥑 Введи количество жиров пуся (в граммах):\nПример: *15*")
+				msg.ParseMode = "Markdown"
+				bot.Send(msg)
+			case "carbs":
+				user.LastCommand = "addcarbs"
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "🍚 Введи количество углеводов пус (в граммах):\nПример: *40*")
+				msg.ParseMode = "Markdown"
+				bot.Send(msg)
+			case "all_nutrients":
+				user.LastCommand = "addall"
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "📊 Введи все данные через пробел пуся:\n*Калории Белки Жиры Углеводы*\n\nПример: *250 20 10 30*")
+				msg.ParseMode = "Markdown"
+				bot.Send(msg)
 			}
+
 			bot.Request(tgbotapi.NewCallback(callback.ID, ""))
 			continue
 		}
+
+		// Обработка обычных сообщений
 		if update.Message == nil {
 			continue
 		}
@@ -101,27 +222,53 @@ func main() {
 		log.Printf("[%s], %s", update.Message.From.UserName, update.Message.Text)
 
 		switch update.Message.Text {
-		case "/start":
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, `🏋️ Привет! Я твой Фит-Ботя - лучший личный фитнес-помощник!
+		case "/start", "/menu":
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, `🏋️ Привет пуся! Я твой Фит-Ботя - лучший личный фитнес-помощник!
 
-*Что я умею:*
-/water - добавить воду 💧
-/food - учет питания 🍎
-/training - выбор тренировки ⏱️
-/stats - статистика 📊
-/clear - очистить все данные 🧹
+Выбирай что будем делать сегодня! 💪`)
+			msg.ReplyMarkup = getMainKeyboard()
+			bot.Send(msg)
 
-*Питание:*
-/addcalories - добавить калории 🔥
-/addprotein - добавить белки 🥩
-/addfat - добавить жиры 🥑
-/addcarbs - добавить углеводы 🍚
+		case "💧 Вода":
+			user.WaterCount++
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "💧 Отлично пуся! Выпито стаканов водички: "+strconv.Itoa(user.WaterCount))
+			bot.Send(msg)
+			saveUserData()
 
-Давай начнем тренироваться вместе! 💪`)
+		case "🏋️ Тренировка":
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "🎯 *Выбери тип и продолжительность тренировки пус:*")
+			msg.ParseMode = "Markdown"
+			msg.ReplyMarkup = getTrainingKeyboard()
+			bot.Send(msg)
+
+		case "🍎 Питание":
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "🍎 *Что добавим пус?*")
+			msg.ParseMode = "Markdown"
+			msg.ReplyMarkup = getFoodKeyboard()
+			bot.Send(msg)
+
+		case "📊 Статистика":
+			hours := user.TrainingTime / 60
+			minutes := user.TrainingTime % 60
+			statsText := "📊 *Твоя статистика пупся:*\n\n" +
+				"💧 Водичка: " + strconv.Itoa(user.WaterCount) + " стаканов\n" +
+				"⏱️ Тренировки: " + strconv.Itoa(user.TrainingTime) + " минут\n" +
+				"🏃 Кардио: " + strconv.Itoa(user.CardioTime) + " минут\n" +
+				"💪 Силовая: " + strconv.Itoa(user.StrengthTime) + " минут\n" +
+				"🔥 Калории: " + strconv.Itoa(user.TotalCalories) + " ккал\n" +
+				"🥩 Белки: " + strconv.Itoa(user.Protein) + "г\n" +
+				"🥑 Жиры: " + strconv.Itoa(user.Fat) + "г\n" +
+				"🍚 Углеводы: " + strconv.Itoa(user.Carbs) + "г"
+
+			if hours > 0 {
+				statsText += "\n\n🏆 *Это " + strconv.Itoa(hours) + " часов " + strconv.Itoa(minutes) + " минут тренировок!*"
+			}
+
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, statsText)
 			msg.ParseMode = "Markdown"
 			bot.Send(msg)
 
-		case "/clear":
+		case "🧹 Очистить":
 			user.WaterCount = 0
 			user.TrainingTime = 0
 			user.CardioTime = 0
@@ -131,180 +278,51 @@ func main() {
 			user.Fat = 0
 			user.Carbs = 0
 			user.LastCommand = ""
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "🧹 *Все данные очищены!*\n\n💧 Стаканы воды: 0\n⏱️ Время тренировок: 0 мин\n🔥 Калории: 0\n🥩 Белки: 0г\n🥑 Жиры: 0г\n🍚 Углеводы: 0г\n\nНачинаем с чистого листа! 💫")
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "🧹 *Все данные очищены пус!*\n\n💧 Стаканы воды: 0\n⏱️ Время тренировок: 0 мин\n🔥 Калории: 0\n🥩 Белки: 0г\n🥑 Жиры: 0г\n🍚 Углеводы: 0г\n\nНачинаем с чистого листа заюсь! 💫")
 			msg.ParseMode = "Markdown"
 			bot.Send(msg)
 			saveUserData()
-
-		case "/water":
-			user.WaterCount++
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "💧 Отлично! Вот столько выпито водички: "+strconv.Itoa(user.WaterCount))
-			bot.Send(msg)
-			saveUserData()
-
-		case "/training":
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "🎯 *Выбери тип тренировки:*")
-			msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
-				tgbotapi.NewInlineKeyboardRow(
-					tgbotapi.NewInlineKeyboardButtonData("🏃 Кардио 15 мин", "cardio_15"),
-					tgbotapi.NewInlineKeyboardButtonData("💪 Силовая 15 мин", "strength_15"),
-				),
-			)
-			bot.Send(msg)
-
-		case "/training15":
-			user.TrainingTime += 15
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "⏱️ Отлично! Добавлено 15 минут тренировки, так держать пус! Всего: "+strconv.Itoa(user.TrainingTime)+" минут.")
-			bot.Send(msg)
-			saveUserData()
-
-		case "/training30":
-			user.TrainingTime += 30
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "⏱️ Отлично! Добавлено 30 минут тренировки, очень хорошо пус! Всего: "+strconv.Itoa(user.TrainingTime)+" минут.")
-			bot.Send(msg)
-			saveUserData()
-
-		case "/training45":
-			user.TrainingTime += 45
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "⏱️ Отлично! Добавлено 45 минут тренировки, молодчина пус! Всего: "+strconv.Itoa(user.TrainingTime)+" минут.")
-			bot.Send(msg)
-			saveUserData()
-
-		case "/training60":
-			user.TrainingTime += 60
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "⏱️ ВАААУ! целый час тренировки!!! Горжусь тобой пус! Всего: "+strconv.Itoa(user.TrainingTime)+" минут.")
-			bot.Send(msg)
-			saveUserData()
-
-		case "/food", "🍎 Еда":
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "🍎 *Учет питания*\n\n"+
-				"Выбери что хочешь добавить:\n"+
-				"/addcalories - только калории\n"+
-				"/addprotein - только белки\n"+
-				"/addfat - только жиры\n"+
-				"/addcarbs - только углеводы\n"+
-				"/addall - все БЖУ сразу\n\n"+
-				"Или введи данные вручную:\n"+
-				"*250 20 10 30* - калории, белки, жиры, углеводы")
-			msg.ParseMode = "Markdown"
-			msg.ReplyMarkup = tgbotapi.NewReplyKeyboard(
-				tgbotapi.NewKeyboardButtonRow(
-					tgbotapi.NewKeyboardButton("🔥 Калории"),
-					tgbotapi.NewKeyboardButton("🥩 Белки"),
-				),
-				tgbotapi.NewKeyboardButtonRow(
-					tgbotapi.NewKeyboardButton("🥑 Жиры"),
-					tgbotapi.NewKeyboardButton("🍚 Углеводы"),
-				),
-				tgbotapi.NewKeyboardButtonRow(
-					tgbotapi.NewKeyboardButton("📊 Все БЖУ"),
-				),
-			)
-			bot.Send(msg)
-
-		case "🔥 Калории", "/addcalories":
-			user.LastCommand = "addcalories"
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-				"🔥 Введи количество калорий:\nПример: *250*")
-			msg.ParseMode = "Markdown"
-			msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
-			bot.Send(msg)
-
-		case "🥩 Белки", "/addprotein":
-			user.LastCommand = "addprotein"
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-				"🥩 Введи количество белка (в граммах):\nПример: *25*")
-			msg.ParseMode = "Markdown"
-			msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
-			bot.Send(msg)
-
-		case "🥑 Жиры", "/addfat":
-			user.LastCommand = "addfat"
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-				"🥑 Введи количество жиров (в граммах):\nПример: *15*")
-			msg.ParseMode = "Markdown"
-			msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
-			bot.Send(msg)
-
-		case "🍚 Углеводы", "/addcarbs":
-			user.LastCommand = "addcarbs"
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-				"🍚 Введи количество углеводов (в граммах):\nПример: *40*")
-			msg.ParseMode = "Markdown"
-			msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
-			bot.Send(msg)
-
-		case "📊 Все БЖУ", "/addall":
-			user.LastCommand = "addall"
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-				"📊 Введи все данные через пробел:\n*Калории Белки Жиры Углеводы*\n\nПример: *250 20 10 30*")
-			msg.ParseMode = "Markdown"
-			msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
-			bot.Send(msg)
-
-		case "/stats":
-			hours := user.TrainingTime / 60
-			minutes := user.TrainingTime % 60
-			statsText := "📊 Твоя статистика:\n" +
-				"💧 Водичка: " + strconv.Itoa(user.WaterCount) + " стаканов\n" +
-				"⏱️ Тренировки: " + strconv.Itoa(user.TrainingTime) + " минут"
-
-			if hours > 0 {
-				statsText += "\n🏆 Это " + strconv.Itoa(hours) + " часов " + strconv.Itoa(minutes) + " минут!"
-			}
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, statsText)
-			bot.Send(msg)
 
 		default:
-			// 1. Сначала проверяем ввод отдельных чисел для БЖУ
+			// Обработка ввода чисел для БЖУ
 			if number, err := strconv.Atoi(update.Message.Text); err == nil {
-				user := getUser(update.Message.Chat.ID)
-
 				switch user.LastCommand {
 				case "addcalories":
 					user.TotalCalories += number
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-						"🔥 Добавлено *"+strconv.Itoa(number)+"* ккал\n"+
-							"Всего за день: *"+strconv.Itoa(user.TotalCalories)+"* ккал")
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "🔥 Добавлено *"+strconv.Itoa(number)+"* ккал зай!\nВсего за день: *"+strconv.Itoa(user.TotalCalories)+"* ккал")
 					msg.ParseMode = "Markdown"
 					bot.Send(msg)
 					saveUserData()
 
 				case "addprotein":
 					user.Protein += number
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-						"🥩 Добавлено *"+strconv.Itoa(number)+"*г белка\n"+
-							"Всего за день: *"+strconv.Itoa(user.Protein)+"*г")
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "🥩 Добавлено *"+strconv.Itoa(number)+"*г белка пус!\nВсего за день: *"+strconv.Itoa(user.Protein)+"*г")
 					msg.ParseMode = "Markdown"
 					bot.Send(msg)
 					saveUserData()
 
 				case "addfat":
 					user.Fat += number
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-						"🥑 Добавлено *"+strconv.Itoa(number)+"*г жиров\n"+
-							"Всего за день: *"+strconv.Itoa(user.Fat)+"*г")
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "🥑 Добавлено *"+strconv.Itoa(number)+"*г жиров зай!\nВсего за день: *"+strconv.Itoa(user.Fat)+"*г")
 					msg.ParseMode = "Markdown"
 					bot.Send(msg)
 					saveUserData()
 
 				case "addcarbs":
 					user.Carbs += number
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-						"🍚 Добавлено *"+strconv.Itoa(number)+"*г углеводов\n"+
-							"Всего за день: *"+strconv.Itoa(user.Carbs)+"*г")
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "🍚 Добавлено *"+strconv.Itoa(number)+"*г углеводов зай!\nВсего за день: *"+strconv.Itoa(user.Carbs)+"*г")
 					msg.ParseMode = "Markdown"
 					bot.Send(msg)
 					saveUserData()
 
 				default:
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-						"Сначала выбери что добавить через /food")
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Сначала выбери что добавить через меню '🍎 Питание' пуся")
 					bot.Send(msg)
 				}
 				continue
 			}
 
+			// Обработка ввода всех БЖУ сразу
 			parts := strings.Fields(update.Message.Text)
 			if len(parts) == 4 {
 				calories, err1 := strconv.Atoi(parts[0])
@@ -319,7 +337,7 @@ func main() {
 					user.Carbs += carbs
 
 					msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-						"🍎 Добавлено:\n"+
+						"🍎 Добавлено пуся:\n"+
 							"🔥 "+strconv.Itoa(calories)+" ккал\n"+
 							"🥩 "+strconv.Itoa(protein)+"г белка\n"+
 							"🥑 "+strconv.Itoa(fat)+"г жиров\n"+
@@ -330,13 +348,9 @@ func main() {
 					continue
 				}
 			}
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-				"Используй команды:\n"+
-					"/start - меню\n"+
-					"/water - добавить воду\n"+
-					"/training - выбрать тренировку\n"+
-					"/food - добавить питание\n"+
-					"/stats - статистика")
+
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Используй кнопки меню пус! 🎯")
+			msg.ReplyMarkup = getMainKeyboard()
 			bot.Send(msg)
 		}
 	}
