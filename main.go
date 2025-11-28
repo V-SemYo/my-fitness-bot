@@ -73,6 +73,7 @@ func main() {
 			user.cheсkDayUpdate()
 
 			log.Printf("[%s] нажал кнопку: %s", callback.From.UserName, callback.Data)
+
 			switch callback.Data {
 			case "cardio_15":
 				user.CardioTime += 15
@@ -108,6 +109,7 @@ func main() {
 /food - учет питания 🍎
 /training - выбор тренировки ⏱️
 /stats - статистика 📊
+/clear - очистить все данные 🧹
 
 *Питание:*
 /addcalories - добавить калории 🔥
@@ -118,6 +120,21 @@ func main() {
 Давай начнем тренироваться вместе! 💪`)
 			msg.ParseMode = "Markdown"
 			bot.Send(msg)
+
+		case "/clear":
+			user.WaterCount = 0
+			user.TrainingTime = 0
+			user.CardioTime = 0
+			user.StrengthTime = 0
+			user.TotalCalories = 0
+			user.Protein = 0
+			user.Fat = 0
+			user.Carbs = 0
+			user.LastCommand = ""
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "🧹 *Все данные очищены!*\n\n💧 Стаканы воды: 0\n⏱️ Время тренировок: 0 мин\n🔥 Калории: 0\n🥩 Белки: 0г\n🥑 Жиры: 0г\n🍚 Углеводы: 0г\n\nНачинаем с чистого листа! 💫")
+			msg.ParseMode = "Markdown"
+			bot.Send(msg)
+			saveUserData()
 
 		case "/water":
 			user.WaterCount++
