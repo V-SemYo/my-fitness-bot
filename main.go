@@ -67,6 +67,29 @@ func main() {
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
+		if update.CallbackQuery != nil {
+			callback := update.CallbackQuery
+			user := getUser(callback.Message.Chat.ID)
+			user.cheсkDayUpdate()
+
+			log.Printf("[%s] нажал кнопку: %s", callback.From.UserName, callback.Data)
+			switch callback.Data {
+			case "cardio_15":
+				user.CardioTime += 15
+				user.TrainingTime += 15
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "🏃 Добавлено 15 минут кардио! Отлично пуся! ❤️")
+				bot.Send(msg)
+				saveUserData()
+			case "strength_15":
+				user.StrengthTime += 15
+				user.TrainingTime += 15
+				msg := tgbotapi.NewMessage(callback.Message.Chat.ID, "💪 Добавлено 15 минут силовой! Ты мощь пуся! 🔥")
+				bot.Send(msg)
+				saveUserData()
+			}
+			bot.Request(tgbotapi.NewCallback(callback.ID, ""))
+			continue
+		}
 		if update.Message == nil {
 			continue
 		}
