@@ -6,30 +6,40 @@ import (
 	"os"
 )
 
+// Функции для сохранения и загрузки данных в файл
 func saveUserData() {
-	data, err := json.Marshal(users)
+	file, err := os.Create("userdata.json")
 	if err != nil {
-		log.Printf("Ошибка сохранения: %v", err)
+		log.Printf("❌ Ошибка создания файла: %v", err)
 		return
 	}
-	err = os.WriteFile("user_data.json", data, 0644)
-	if err != nil {
-		log.Printf("Ошибка записи файла: %v", err)
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(users); err != nil {
+		log.Printf("❌ Ошибка кодирования: %v", err)
 		return
 	}
-	log.Println("✅ Данные сохранены!")
+	log.Printf("💾 Данные сохранены для %d пользователей", len(users))
 }
 
 func loadUserData() {
-	data, err := os.ReadFile("user_data.json")
+	file, err := os.Open("userdata.json")
 	if err != nil {
-		log.Println("📝 Файл данных не найден, начинаем с чистого листа")
+		if os.IsNotExist(err) {
+			log.Printf("📝 Файл данных не найден, начинаем с чистого листа")
+			return
+		}
+		log.Printf("❌ Ошибка открытия файла: %v", err)
 		return
 	}
-	err = json.Unmarshal(data, &users)
-	if err != nil {
-		log.Printf("Ошибка загрузки: %v", err)
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&users); err != nil {
+		log.Printf("❌ Ошибка декодирования данных: %v", err)
 		return
 	}
-	log.Printf("✅ Данные загружены! Пользователей: %d", len(users))
+	log.Printf("📂 Данные загружены для %d пользователей", len(users))
 }
